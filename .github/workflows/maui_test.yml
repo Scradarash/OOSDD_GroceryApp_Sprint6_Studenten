@@ -6,6 +6,7 @@ on:
       - main
       - development
       - release
+      - feature/UC20
   pull_request:
     branches:
       - main
