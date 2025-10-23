@@ -11,6 +11,7 @@ on:
       - main
       - development
       - release
+      - feature/UC20
  
 jobs:
   test:
