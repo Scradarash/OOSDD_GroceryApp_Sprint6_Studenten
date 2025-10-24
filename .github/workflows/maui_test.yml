@@ -40,10 +40,10 @@ jobs:
         run: mkdir -p ./TestResults
 
       - name: Voer unit tests uit
-        run: dotnet test --configuration Release --no-restore --no-build --verbosity normal
+        run: dotnet test --configuration Release --no-restore --no-build --verbosity normal --logger "trx;LogFileName=TestResults.trx" --results-directory ./TestResults
 
       - name: Upload testresultaten als artefact
-        if: always() 
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
