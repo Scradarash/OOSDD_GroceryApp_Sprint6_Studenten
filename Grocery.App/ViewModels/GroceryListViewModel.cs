@@ -14,7 +14,7 @@ namespace Grocery.App.ViewModels
         [ObservableProperty]
         Client client;
 
-        public GroceryListViewModel(IGroceryListService groceryListService, GlobalViewModel global) 
+        public GroceryListViewModel(IGroceryListService groceryListService, GlobalViewModel global)
         {
             Title = "Boodschappenlijst";
             _groceryListService = groceryListService;
@@ -35,10 +35,45 @@ namespace Grocery.App.ViewModels
             if (Client.Role == Role.Admin) await Shell.Current.GoToAsync(nameof(BoughtProductsView), true);
         }
 
+        [RelayCommand]
+        public async Task AddGroceryList()
+        {
+            string name = await Shell.Current.DisplayPromptAsync(
+                "Nieuwe lijst",
+                "Naam van de boodschappenlijst:",
+                "OK",
+                "Annuleer",
+                placeholder: "Bijv. Weekend boodschappen",
+                maxLength: 80);
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                var newList = new GroceryList(
+                    id: 0, // Wordt overschreven in service
+                    name: name,
+                    date: DateOnly.FromDateTime(DateTime.Today),
+                    color: "#FF6A00", // Default kleur
+                    clientId: Client.Id
+                );
+
+                _groceryListService.Add(newList);
+                RefreshLists();
+            }
+        }
+
+        private void RefreshLists()
+        {
+            GroceryLists.Clear();
+            foreach (var list in _groceryListService.GetAll())
+            {
+                GroceryLists.Add(list);
+            }
+        }
+
         public override void OnAppearing()
         {
             base.OnAppearing();
-            GroceryLists = new(_groceryListService.GetAll());
+            RefreshLists();
         }
 
         public override void OnDisappearing()
